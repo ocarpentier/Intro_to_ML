@@ -5,20 +5,18 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from toolbox_02450 import mcnemar
 from toolbox_02450 import similarity
-def get_var_expl(S):
-    tot = np.sum(S**2)
-    for i,val in enumerate(S):
-        print(f'By PC{i+1} {np.sum(S[0:i+1]**2)/tot*100}% is used.')
-        
-#prob not correct
-def cost_ridgereg_1d(X,Y,w,w0,lamb):
-    X_hat = (X-np.mean(X))/np.std(X)
-    Y_hat = (Y-np.mean(Y))
-    cost = Y_hat-(X_hat*w)-w0
-    cost = np.sum(cost**2)-lamb*w**2
-    return cost
+
 
 def McNemar(n11,n12,n21,n22,alpha=0.05):
+    """
+    Gets the McNemar accuracy. Based on the function of the lectures
+    :param n11: amount of results where both are one
+    :param n12: amount of results where the first is one and the second is two
+    :param n21: inverse of n12
+    :param n22: amount of results where both are zero
+    :param alpha: confidence
+    :return: the confidence interval,thetahat and the probability
+    """
     nn = np.zeros((2, 2))
 
     nn[0, 0] = n11
@@ -52,10 +50,12 @@ def McNemar(n11,n12,n21,n22,alpha=0.05):
 
 def Jeffreys(m, n, alpha=0.05):
     """
+    Jeffrey's accuracy measure
+    Based on the function of the lectures
     :param m: number of accurate guesses
     :param n: number of total geusses
-    :param alpha:
-    :return:
+    :param alpha: confidence interval
+    :return: thetahat and the confidence interval
     """
     # m = sum(y - yhat == 0)
     # n = y.size
@@ -71,6 +71,7 @@ def Impurity(Parent,childrens,method):
     Parent: List of number of objects belonging to corresponding classes
     childrens: List containing a list for every branch with number of objects belonging to classes
     method: A function to calculate the impurity
+    :return the imurity gain
     """
 
     epsilon = 0
@@ -100,6 +101,10 @@ def Gini(C_V):
     return 1-gin
 
 def PCA_variances(S_arr):
+    """
+    prints the explained variances of the eigenvectors
+    :param S: 1D Numpy array of the diagonal of the S matrix aka the variances
+    """
     som = np.sum(S_arr**2)
     for idx,S in enumerate(S_arr):
         print(f'PCA component number {idx+1} explains {S**2/som*100}% of the variance')
@@ -123,7 +128,7 @@ def normal_dens(mu,sigma,x):
 
 def ARD(distances):
     """
-    :param distances: List of K nearest neighboures' starting with the searched one
+    :param distances: List of lists of K nearest neighboures' starting with the searched one
     :return: average relative distance
     """
     densities = []
@@ -135,6 +140,14 @@ def ARD(distances):
     return ard
 
 def confusion_mat_info(TP,TN,FN,FP):
+    """
+    Prints some often asked information of the confusion matrix
+    :param TP: True Positive
+    :param TN: True Negative
+    :param FN: False Negative
+    :param FP: False Positive
+    :return: [None]
+    """
     Precision = TP/(TP+FP)
     Recall = TP/(TP+FN)
 
