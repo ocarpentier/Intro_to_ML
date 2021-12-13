@@ -319,7 +319,13 @@ if __name__ == '__main__':
     # w = np.array([418.94,-26.12])
     # print(probabilityLogisticRegression(14.5,w))
 
-    mus = [18.347,14.997,18.421]
-    sigmas = [1.2193,0.9386,1.1354]
-    ws = [0.13,0.55,0.32]
-    GMM_1D(mus,sigmas,ws,15.38)
+    # mus = [18.347,14.997,18.421]
+    # sigmas = [1.2193,0.9386,1.1354]
+    # ws = [0.13,0.55,0.32]
+    # GMM_1D(mus,sigmas,ws,15.38)
+
+    # n11 = [86,65,79]
+    # n12 = [8,15,5]
+    # n21 = [7,11,17]
+    # n22 = [10,20,10]
+    # McNemar(sum(n11), sum(n12), sum(n21), sum(n22))
