@@ -79,6 +79,7 @@ def Impurity(Parent,childrens,method):
         # I_ch.append(method(child))
         I_ch = method(child)
         epsilon += sum(child)/sum(Parent)*I_ch
+    print('check2',method(Parent))
     impurity_gain = method(Parent) - epsilon
     return impurity_gain
 
@@ -178,6 +179,73 @@ def Jaccard_index(pred,target):
     J = S/(N/2*(N-1)-D)
     return J
 
+def p_distance(x,y,p=1):
+    """
+    Calculates the p-norm distance.
+    :param x: 1D Numpy array
+    :param y: 1D Numpy array
+    :param p: can be an integer or the string 'inf'
+    :return: dp, the distance
+    """
+    if p == 'inf':
+        dp = np.amax(np.abs(x-y))
+    elif type(p)==type(5):
+        dp = np.sum(np.abs(x-y)**p)**(1/p)
+    else:
+        raise Exception('p can be \'inf\' or has to be an integer')
+    return dp
+
+
+def AdaBoost(N, errors):
+    """
+    To compute the updates of the weight FIRST INTERACTION
+    N = total number of observations
+    errors = number of errors made by the classifier
+    """
+
+    startingWeight = 1 / N
+    tot_Error = errors / N
+    alpha = 0.5 * np.log((1 - tot_Error) / tot_Error)
+
+    # new weights before normalization
+    newWeightIncorrects = (1 / 7) * m.exp(alpha)
+    newWeightCorrects = (1 / 7) * m.exp(-alpha)
+
+    # normalized weights
+    IncorrectsNorm = newWeightIncorrects / ((newWeightIncorrects * errors) + (newWeightCorrects * (N - errors)))
+    CorrectsNorm = newWeightCorrects / ((newWeightIncorrects * errors) + (newWeightCorrects * (N - errors)))
+
+    print(f'The new weight for each incorrect prediction is {IncorrectsNorm}')
+    print(f'The new weight for each correct prediction is {CorrectsNorm}')
+
+
+def probabilityLogisticRegression(xi,w):
+    """
+    Exercise where there is the logistic regression and you have to identify
+    the right vector of weights
+    xi = the choice is up to you
+    w = vector of weights
+
+    """
+    Xi_tilde = np.array([1,xi])
+    p = 1/(1+m.exp(-(np.dot(Xi_tilde.T,w))))
+    print(f'The probability for xi = {xi} and weight {w} is {p}')
+
+def GMM_1D(mus,sigmas,ws,x):
+    """
+    Can be used to calculate the chance something has to belong to a certain class only for 1d GMM's
+    Will print out the results automatically.
+    :param mus: list or arrray of the means of the clusters
+    :param sigmas: list or arrray of the std's of the clusters
+    :param ws: list or arrray of the weights of the clusters
+    :param x: Value of the variable (a single value)
+    :return: Nothing
+    """
+    prob_denom = 0
+    for idx,mu in enumerate(mus):
+        prob_denom += ws[idx]*normal_dens(mu,sigmas[idx],x)
+    for idx,mu in enumerate(mus):
+        print(f'The probability of x={round(x,2)} belonging to class {idx+1} is p(x)={(ws[idx]*normal_dens(mu,sigmas[idx],x))/prob_denom}')
 
 if __name__ == '__main__':
     # # get_var_expl(np.array([43.67,33.47,31.15,30.36,27.77,13.86]))
@@ -193,12 +261,12 @@ if __name__ == '__main__':
     # childs = [[1,4],[4,6]]
     # print(Impurity(Parent,childs,Gini))
     #
-    # sigma = np.array([19.64,6.87,3.26,2.3,1.12])
+    # sigma = np.array([30.19,16.08,11.07,5.98])
     # PCA_variances(sigma)
 
-    parent = [8,3]
-    child  = [[6,1],[2,2]]
-    print(Impurity(parent,child,Gini))
+    # parent = [8,3]
+    # child  = [[6,1],[2,2]]
+    # print(Impurity(parent,child,Gini))
     # X = np.mat([1,3,3])
     # W1 = np.mat([[-1.2,-1],[-1.3,0],[0.6,0.9]])
     # W2 = np.mat([[-0.3,0.5]])
@@ -212,19 +280,46 @@ if __name__ == '__main__':
     # y2 = np.mat([1,b1,b2])*W2.transpose()
     # print(softmax(np.concatenate((y1,y2))))
 
-    # o1 = [0,0,0,0,0,0,0,0,0]
-    # o2 = [0,0,0,0,0,0,0,0,1]
+    # o1 = [0,1,1,1,0,1,0,1]
+    # o2 = [1,1,1,1,0,0,0,1]
     # o3 = [0,1,1,1,1,1,0,0,0]
     # o4 = [1,0,0,0,0,0,0,0,0]
-    # print(similarity(o2,o4,'smc'))
+    # print(similarity(o1,o2,'jac'))
 
     # print(ROC(3,1,1,2))
-    # dist = [[0.9,1.],[1,1.3],[0.9,1.3]]
+    # dist = [[75,125],[51,75],[51,125]]
     # print(ARD(dist))
 
     # print(softmax(np.array([1.41 + 0.76*(-0.06) + 1.76*(-0.28) -0.32*0.43 -0.96*(-0.3) + 6.64*(-0.36) -2.74])))
     # confusion_mat_info(34,39,7,11)
 
-    pred = np.array([1,1,1,1,1,1,1,1,0,0,1])
-    tar  = np.array([1,1,1,1,1,1,1,1,0,0,0])
-    print(Jaccard_index(pred,tar))
+    # pred = np.array([1,1,1,1,1,1,1,1,0,0,1])
+    # tar  = np.array([1,1,1,1,1,1,1,1,0,0,0])
+    # print(Jaccard_index(pred,tar))
+    # x = np.array([-1.24,-0.26,-1.04])
+    # y = np.array([-0.6,-0.86,-0.5])
+    # print(p_distance(x,y,'inf'))
+    #
+    # print(AdaBoost(12,0.417))
+
+    # S = np.diagflat([30.19, 16.08, 11.07, 5.98])
+    # V = np.mat([[0.45,-0.6,-0.64,0.15],
+    #             [-0.4,-0.8,0.43, -0.16],
+    #             [0.58,-0.01,0.24,-0.78],
+    #             [0.55,-0.08,0.59,0.58]])
+    # X_tilde = np.mat([[-1,-1,-1,1]])
+    # print(X_tilde*np.linalg.inv(V.transpose()))
+    # x = np.array([1.1,2])
+    # wa = np.array([6,4])
+    # wb = np.array([4,2])
+    # 
+    # A = np.sqrt(np.sum((x-wa)**2))<3
+    # B = np.sqrt(np.sum((x-wb)**2))<3
+    # print(A,B)
+    # w = np.array([418.94,-26.12])
+    # print(probabilityLogisticRegression(14.5,w))
+
+    mus = [18.347,14.997,18.421]
+    sigmas = [1.2193,0.9386,1.1354]
+    ws = [0.13,0.55,0.32]
+    GMM_1D(mus,sigmas,ws,15.38)
